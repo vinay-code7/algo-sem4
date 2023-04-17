@@ -17,7 +17,7 @@ void print(int arr[], int n)
 
 int partition(int arr[], int begin, int end)
 {
-    // random   
+    // random
     srand(time(NULL));
     int random = begin + rand() % (end - begin);
     swap(arr[random], arr[end]);
@@ -45,10 +45,10 @@ int randomized_select(int arr[], int begin, int end, int rank)
 
     if (rank == k)
         return arr[q];
-    
+
     if (rank < k)
         return randomized_select(arr, begin, q - 1, rank);
-    return randomized_select(arr, q + 1, end, rank - k);   
+    return randomized_select(arr, q + 1, end, rank - k);
 }
 
 int main()
@@ -60,14 +60,17 @@ int main()
 
     input(arr, n);
 
-    cout << "Enter rank: ";
-    int rank;
-    cin >> rank;
+    while (true)
+    {
+        cout << "\nEnter rank: ";
+        int rank;
+        cin >> rank;
 
-    // *******************************
-    int ele = randomized_select(arr, 0, n - 1, rank);
-    // *******************************
+        // *******************************
+        int ele = randomized_select(arr, 0, n - 1, rank);
+        // *******************************
 
-    cout << endl;
-    cout << "Element at rank " << rank << " is: " << ele << endl;
+        cout << "Element at rank " << rank << ": ";
+        cout << ele << endl;
+    }
 }
