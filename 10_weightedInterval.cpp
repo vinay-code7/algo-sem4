@@ -29,23 +29,52 @@ int get_P(Interval arr[], int i)
     return -1;
 }
 
-int solution(Interval arr[], int n)
+void findSolution(Interval arr[], int table[], int n, int i)
 {
+    if (i < 0)
+        return;
+
+    int taken = arr[i].weight;
+    int Pi = get_P(arr, i);
+    if (Pi != -1)
+        taken += table[Pi];
+
+    int not_taken = table[i - 1];
+    if (taken >= not_taken)
+    {
+        cout << arr[i].start << ", " << arr[i].end << endl;
+        return findSolution(arr, table, n, Pi);
+    }
+    return findSolution(arr, table, n, i - 1);
+}
+
+void solution(Interval arr[], int n)
+{
+    sort(arr, arr+n, compare);
+
     int table[n];
+
     for (int i = 0; i < n; i++)
     {
         int take = arr[i].weight; 
         int Pi = get_P(arr, i);
-        if (Pi == -1)
+        if (Pi != -1)
             take += table[Pi];
         
         int not_take = table[i - 1];
 
         table[i] = max(take, not_take);
     }
-    return table[n-1];
-    
+
+    for (int i = 0; i < n; i++)
+        cout << table[i] << " ";
+    cout << endl;
+
+    cout << "\nIntervals that should be taken: "<< endl;
+    findSolution(arr, table, n, n);
 }
+
+
 
 int main()
 {
@@ -59,6 +88,6 @@ int main()
         {16, 20, 1},
     };
     
-    cout << "The optimal profit is "
-         << solution(arr, n) << endl;
+    solution(arr, n);
+    
 }
