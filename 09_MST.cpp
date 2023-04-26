@@ -1,10 +1,41 @@
 #include <iostream>
 #include <queue>
 #include <map>
-#include "GraphClass.cpp"
+#include <map>
+#include <vector>
 using namespace std;
 
-void primMST(Graph_Weighted graph, int src)
+#define pair_ii pair<int, int>
+
+class Graph
+{
+public:
+    map<int, vector<pair_ii>> graph;
+
+    void add_edge(int a, int b, int weight)
+    {
+        graph[a].push_back({b, weight});
+        graph[b].push_back({a, weight});
+    }
+
+    vector<int> nodes()
+    {
+        vector<int> res;
+        // map<int, vector<pair_ii>>::iterator itr;
+        for (auto itr = graph.begin(); itr != graph.end(); itr++)
+            res.push_back(itr->first);
+        return res;
+    }
+
+    vector<pair_ii> neighbors(int src)
+    {
+        if (graph.find(src) == graph.end())
+            return vector<pair_ii>();
+        return graph.at(src);
+    }
+};
+
+void primMST(Graph graph, int src)
 {
     map<int, int> parent;
     map<int, int> key;
@@ -62,7 +93,7 @@ int main()
     //     {0, 0, 2, 0, 0, 0, 6, 7, 0},   // i
     // };
 
-    Graph_Weighted graph;
+    Graph graph;
 
     // graph.add_edge(0, 1, 2);
     // graph.add_edge(0, 3, 6);
