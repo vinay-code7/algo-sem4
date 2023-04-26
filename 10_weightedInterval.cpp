@@ -7,7 +7,7 @@ using namespace std;
 class Interval
 {
 public:
-    int start, end, weight;
+    int start, end, weight, p_value;
 };
 
 // A utility function that is used for sorting events
@@ -17,32 +17,20 @@ bool compare(Interval a, Interval b)
     return (a.end < b.end);
 }
 
-// Find the latest job (in sorted array) that doesn't
-// conflict with the job[i]
-int get_P(Interval arr[], int i)
-{
-    for (int j = i - 1; j >= 0; j--)
-    {
-        if (arr[j].end <= arr[i].start)
-            return j;
-    }
-    return -1;
-}
-
 void findSolution(Interval arr[], int table[], int n, int i)
 {
     if (i < 0)
         return;
 
     int taken = arr[i].weight;
-    int Pi = get_P(arr, i);
+    int Pi = arr[i].p_value - 1;
     if (Pi != -1)
         taken += table[Pi];
 
     int not_taken = table[i - 1];
     if (taken >= not_taken)
     {
-        cout << arr[i].start << ", " << arr[i].end << endl;
+        cout << arr[i].start << ", " << arr[i].end << " => " << arr[i].weight << endl;
         return findSolution(arr, table, n, Pi);
     }
     return findSolution(arr, table, n, i - 1);
@@ -50,44 +38,42 @@ void findSolution(Interval arr[], int table[], int n, int i)
 
 void solution(Interval arr[], int n)
 {
-    sort(arr, arr+n, compare);
+    sort(arr, arr + n, compare);
 
     int table[n];
 
     for (int i = 0; i < n; i++)
     {
-        int take = arr[i].weight; 
-        int Pi = get_P(arr, i);
+        int take = arr[i].weight;
+        int Pi = arr[i].p_value - 1;
         if (Pi != -1)
             take += table[Pi];
-        
+
         int not_take = table[i - 1];
 
         table[i] = max(take, not_take);
     }
 
+    cout << "Table will be: \n";
     for (int i = 0; i < n; i++)
         cout << table[i] << " ";
     cout << endl;
 
-    cout << "\nIntervals that should be taken: "<< endl;
-    findSolution(arr, table, n, n);
+    cout << "\nIntervals that should be taken: " << endl;
+    findSolution(arr, table, n, n-1);
 }
-
-
 
 int main()
 {
     int n = 6;
     Interval arr[n] = {
-        {1, 7, 2},
-        {2, 13, 4},
-        {8, 15, 4},
-        {5, 17, 7},
-        {16, 18, 2},
-        {16, 20, 1},
+        {1, 7, 2, 0},
+        {2, 13, 4, 0},
+        {8, 15, 4, 1},
+        {5, 17, 7, 0},
+        {16, 18, 2, 3},
+        {16, 20, 1, 3},
     };
-    
+
     solution(arr, n);
-    
 }
