@@ -1,78 +1,96 @@
 #include <algorithm>
 #include <iostream>
-#include <vector>
 using namespace std;
 
 // to represent interval
 class Interval
 {
 public:
-    int start, end, weight, p_value;
+    int start, end, weight;
 };
+
+void findSolution(Interval arr[], int table[], int p_value[], int n)
+{
+    int i = n - 1;
+    while (i >= 0)
+    {
+        int value = p_value[i] == 0 ? 0 : table[p_value[i] - 1];
+        int take = arr[i].weight + value;
+
+        int not_take = i == 0 ? 0 : table[i - 1];
+
+        if (take >= not_take)
+        {
+            cout << arr[i].start << ", "
+                 << arr[i].end << " => "
+                 << arr[i].weight << endl;
+
+            i = p_value[i] - 1;
+        }
+        else i--;
+    }
+}
 
 // A utility function that is used for sorting events
 // according to finish time
 bool compare(Interval a, Interval b)
 {
-    return (a.end < b.end);
+    return a.end < b.end;
 }
 
-void findSolution(Interval arr[], int table[], int n, int i)
+void find_p_value(Interval arr[], int p_value[], int n)
 {
-    if (i < 0)
-        return;
-
-    int taken = arr[i].weight;
-    int Pi = arr[i].p_value - 1;
-    if (Pi != -1)
-        taken += table[Pi];
-
-    int not_taken = table[i - 1];
-    if (taken >= not_taken)
+    for (int i = 0; i < n; i++)
     {
-        cout << arr[i].start << ", " << arr[i].end << " => " << arr[i].weight << endl;
-        return findSolution(arr, table, n, Pi);
+        int left = 0;
+        int right = i - 1;
+        while (left <= right)
+        {
+            int mid = (left + right) / 2;
+            if (arr[mid].end <= arr[i].start)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+        p_value[i] = left;
     }
-    return findSolution(arr, table, n, i - 1);
 }
 
 void solution(Interval arr[], int n)
 {
     sort(arr, arr + n, compare);
 
-    int table[n];
+    int p_value[n];
+    find_p_value(arr, p_value, n);
 
+    int table[n];
     for (int i = 0; i < n; i++)
     {
-        int take = arr[i].weight;
-        int Pi = arr[i].p_value - 1;
-        if (Pi != -1)
-            take += table[Pi];
+        int value = p_value[i] == 0 ? 0 : table[p_value[i] - 1];
+        int take = arr[i].weight + value;
 
-        int not_take = table[i - 1];
+        int not_take = i == 0 ? 0 : table[i - 1];
 
         table[i] = max(take, not_take);
     }
 
-    cout << "Table will be: \n";
-    for (int i = 0; i < n; i++)
-        cout << table[i] << " ";
-    cout << endl;
-
+    cout << "\nMaximum weight: " << table[n - 1];
     cout << "\nIntervals that should be taken: " << endl;
-    findSolution(arr, table, n, n-1);
+    findSolution(arr, table, p_value, n);
 }
 
 int main()
 {
-    int n = 6;
+    int n = 8;
     Interval arr[n] = {
-        {1, 7, 2, 0},
-        {2, 13, 4, 0},
-        {8, 15, 4, 1},
-        {5, 17, 7, 0},
-        {16, 18, 2, 3},
-        {16, 20, 1, 3},
+        {3, 6, 1},
+        {0, 5, 4},
+        {3, 9, 5},
+        {5, 10, 2},
+        {1, 4, 2},
+        {0, 3, 3},
+        {8, 10, 1},
+        {4, 7, 2},
     };
 
     solution(arr, n);
